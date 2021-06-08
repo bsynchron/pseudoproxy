@@ -1,6 +1,9 @@
 #!/bin/python3
 import socket, requests
 
+proxies={"http":"http://109.193.195.7:8080",
+         "http":"http://104.248.39.42:8080"}
+
 serv_sock = socket.socket(
     socket.AF_INET,      # set protocol family to 'Internet' (INET)
     socket.SOCK_STREAM,  # set socket type to 'stream' (i.e. TCP)
@@ -16,7 +19,7 @@ while True:
     print(request)
     request_arr = request.split(" ")
     print("bitmex.com"+request_arr[1])
-    r = requests.get('https://bitmex.com'+request_arr[1])
+    r = requests.get('https://api.my-ip.io'+request_arr[1],proxies=proxies)
     print(r.text)
     response_body_raw=r.text
     response_headers_raw = f"'Content-Type': 'text/html; encoding=utf8'\n'Content-Length': {len(response_body_raw)}\n'Connection': 'close'"
@@ -26,6 +29,3 @@ while True:
 
     client_sock.send(f"{response_proto} {response_status} {response_status_text}\n{response_headers_raw}\n\n{response_body_raw}".encode())
     client_sock.close()
-
-proxies=[]
-print("hi")
