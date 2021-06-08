@@ -1,5 +1,5 @@
 #!/bin/python3
-import socket
+import socket, requests
 
 serv_sock = socket.socket(
     socket.AF_INET,      # set protocol family to 'Internet' (INET)
@@ -12,13 +12,20 @@ while True:
     serv_sock.listen(10)
     client_sock, client_addr = serv_sock.accept()
     print(client_addr)
-    response_body_raw=f"<html><body>\n<span>no</span>\n</body></html>"
+    request=client_sock.recv(2048).decode()
+    print(request)
+    request_arr = request.split(" ")
+    print("bitmex.com"+request_arr[1])
+    r = requests.get('https://bitmex.com'+request_arr[1])
+    print(r.text)
+    response_body_raw=r.text
     response_headers_raw = f"'Content-Type': 'text/html; encoding=utf8'\n'Content-Length': {len(response_body_raw)}\n'Connection': 'close'"
     response_proto = 'HTTP/1.1'
     response_status = '200'
     response_status_text = 'OK'
 
     client_sock.send(f"{response_proto} {response_status} {response_status_text}\n{response_headers_raw}\n\n{response_body_raw}".encode())
+    client_sock.close()
 
 proxies=[]
 print("hi")
